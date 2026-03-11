@@ -34,11 +34,42 @@ html, body {
   font-family: var(--font);
   color: var(--text-pri);
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
   padding: 24px 12px 120px;
   gap: 40px;
+}
+
+/* ============================================================
+   TOOL BANNER
+   ============================================================ */
+#tool-banner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 0;
+}
+
+#banner-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+#tool-banner h1 {
+  font-size: 20px;
+  font-weight: 500;
+  color: #f3e3df;
+  letter-spacing: 0.3px;
+}
+
+#banner-text p {
+  font-size: 12px;
+  color: #9a8880;
+  font-weight: 300;
+  margin-top: 2px;
 }
 
 /* ============================================================
@@ -760,6 +791,7 @@ html, body {
    EXPORT / SCREENSHOT STATE
    ============================================================ */
 body.exporting #editor-panel { display: none !important; }
+body.exporting #tool-banner { display: none !important; }
 body.exporting #phone-frame {
   box-shadow: none;
 }
