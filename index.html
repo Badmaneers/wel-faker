@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wellbeing Faker</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <!-- html2canvas -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+
+  <!-- ===== MOCK PHONE FRAME ===== -->
+  <div id="phone-frame">
+
+    <!-- ===== MOCK UI (captured area) ===== -->
+    <div id="mock-ui">
+
+      <!-- 1. STATUS BAR -->
+      <div id="status-bar">
+        <span id="sb-time">7:24</span>
+        <div id="sb-right">
+          <span id="sb-speed">34.0<br/>KB/S</span>
+          <span id="sb-network">4G<br/>LTE</span>
+          <div id="sb-wifi-icon" style="display:none;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
+            </svg>
+          </div>
+          <div id="sb-signal-bars">
+            <span class="bar b1"></span>
+            <span class="bar b2"></span>
+            <span class="bar b3"></span>
+            <span class="bar b4"></span>
+          </div>
+          <div id="sb-battery-wrap">
+            <div id="sb-battery-icon">
+              <div id="sb-battery-fill"></div>
+            </div>
+            <span id="sb-battery-pct">40%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. NAV ROW -->
+      <div id="nav-row">
+        <span id="nav-back"></span>
+        <span id="nav-menu">&#8942;</span>
+      </div>
+
+      <!-- 3. TITLE -->
+      <div id="title-section">
+        <h1 id="main-title">App activity details</h1>
+        <div id="dropdown-pill">
+          <span id="dropdown-label">Screen time</span>
+          <span id="dropdown-arrow">&#9660;</span>
+        </div>
+      </div>
+
+      <!-- 4. TOTAL TIME -->
+      <div id="total-time-section">
+        <span id="total-time-display">0 mins</span>
+        <span id="total-time-label">Today</span>
+      </div>
+
+      <!-- 5. WEEKLY CHART -->
+      <div id="chart-section">
+        <canvas id="weekly-chart"></canvas>
+      </div>
+
+      <!-- 6. SELECTED DAY LABEL -->
+      <div id="day-nav">
+        <span id="day-nav-prev"></span>
+        <span id="day-label">Wed, 11 Mar</span>
+        <span id="day-nav-next" style="visibility:hidden;"></span>
+      </div>
+
+      <!-- 7. APP LIST -->
+      <div id="app-list"></div>
+
+    </div>
+    <!-- end mock-ui -->
+
+  </div>
+  <!-- end phone-frame -->
+
+  <!-- ===== EDITOR PANEL ===== -->
+  <div id="editor-panel">
+    <div id="editor-header" onclick="toggleEditor()">
+      <span>&#9998; Editor</span>
+      <span id="editor-toggle-icon">&#9650;</span>
+    </div>
+    <div id="editor-body">
+
+      <!-- STATUS BAR EDITOR -->
+      <section class="editor-section">
+        <h3>Status Bar</h3>
+        <div class="editor-row">
+          <label>Time</label>
+          <input type="text" id="ed-time" value="7:24" maxlength="8" />
+        </div>
+        <div class="editor-row">
+          <label>Battery %</label>
+          <input type="number" id="ed-battery" value="40" min="0" max="100" />
+        </div>
+        <div class="editor-row">
+          <label>Network</label>
+          <select id="ed-network">
+            <option value="4G LTE">4G LTE</option>
+            <option value="5G">5G</option>
+            <option value="LTE">LTE</option>
+            <option value="WiFi">WiFi</option>
+          </select>
+        </div>
+        <div class="editor-row">
+          <label>Signal bars (1–4)</label>
+          <input type="number" id="ed-signal" value="4" min="1" max="4" />
+        </div>
+        <div class="editor-row">
+          <label>Speed text</label>
+          <input type="text" id="ed-speed" value="34.0 KB/S" maxlength="20" />
+        </div>
+      </section>
+
+      <!-- DATE EDITOR -->
+      <section class="editor-section">
+        <h3>Selected Day</h3>
+        <div class="editor-row">
+          <label>Day label</label>
+          <input type="text" id="ed-day-label" value="Wed, 11 Mar" />
+        </div>
+      </section>
+
+      <!-- WEEKLY GRAPH EDITOR -->
+      <section class="editor-section">
+        <h3>Weekly Graph (hours)</h3>
+        <div class="editor-row" style="margin-bottom:12px;">
+          <label>Today's bar</label>
+          <select id="ed-today-index">
+            <option value="0">Mon</option>
+            <option value="1">Tue</option>
+            <option value="2" selected>Wed</option>
+            <option value="3">Thu</option>
+            <option value="4">Fri</option>
+            <option value="5">Sat</option>
+            <option value="6">Sun</option>
+          </select>
+        </div>
+        <div id="weekly-editor-grid">
+          <div class="weekly-day-field">
+            <label>Mon</label>
+            <input type="number" class="day-input" data-day="0" value="6" min="0" max="24" step="0.5"/>
+          </div>
+          <div class="weekly-day-field">
+            <label>Tue</label>
+            <input type="number" class="day-input" data-day="1" value="9" min="0" max="24" step="0.5"/>
+          </div>
+          <div class="weekly-day-field">
+            <label>Wed</label>
+            <input type="number" class="day-input" data-day="2" value="3" min="0" max="24" step="0.5"/>
+          </div>
+          <div class="weekly-day-field">
+            <label>Thu</label>
+            <input type="number" class="day-input" data-day="3" value="0" min="0" max="24" step="0.5"/>
+          </div>
+          <div class="weekly-day-field">
+            <label>Fri</label>
+            <input type="number" class="day-input" data-day="4" value="0" min="0" max="24" step="0.5"/>
+          </div>
+          <div class="weekly-day-field">
+            <label>Sat</label>
+            <input type="number" class="day-input" data-day="5" value="0" min="0" max="24" step="0.5"/>
+          </div>
+          <div class="weekly-day-field">
+            <label>Sun</label>
+            <input type="number" class="day-input" data-day="6" value="0" min="0" max="24" step="0.5"/>
+          </div>
+        </div>
+      </section>
+
+      <!-- ADD APP FORM -->
+      <section class="editor-section">
+        <h3>Add App</h3>
+
+        <!-- Icon selector row -->
+        <div class="editor-row" style="align-items:flex-start; gap:10px; margin-bottom:10px;">
+          <label style="padding-top:6px;">Icon</label>
+          <div style="display:flex; flex-direction:column; gap:6px; flex:1;">
+            <!-- Preview + pick-from-library -->
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div id="add-icon-preview" class="icon-preview-thumb"></div>
+              <button type="button" class="btn-pick-lib" onclick="showIconPicker(setAddAppIcon)">&#128247; Pick from library</button>
+            </div>
+            <!-- OR upload custom file -->
+            <label style="font-size:11px; color:#666; margin:0;">or upload custom:</label>
+            <input type="file" id="add-app-icon" accept="image/*" />
+          </div>
+        </div>
+
+        <div class="editor-row">
+          <label>App Name</label>
+          <input type="text" id="add-app-name" placeholder="e.g. YouTube" />
+        </div>
+        <div class="editor-row">
+          <label>Hours</label>
+          <input type="number" id="add-app-hours" value="0" min="0" max="24" />
+        </div>
+        <div class="editor-row">
+          <label>Minutes</label>
+          <input type="number" id="add-app-mins" value="0" min="0" max="59" />
+        </div>
+        <button id="btn-add-app" onclick="addApp()">Add App</button>
+      </section>
+
+      <!-- EXPORT -->
+      <section class="editor-section">
+        <h3>Export</h3>
+        <button id="btn-export" onclick="exportScreenshot()">&#128247; Export Screenshot</button>
+        <button id="btn-reset" onclick="resetAll()">&#128465; Reset All</button>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+  <!-- ===== ICON PICKER MODAL ===== -->
+  <div id="icon-picker-backdrop" onclick="closeIconPicker()">
+    <div id="icon-picker-modal" onclick="event.stopPropagation()">
+      <div id="icon-picker-header">
+        <span>Choose an icon</span>
+        <button id="icon-picker-close" onclick="closeIconPicker()">&#10005;</button>
+      </div>
+      <div id="icon-picker-grid"></div>
+      <div id="icon-picker-footer">
+        <label class="btn-pick-lib" style="cursor:pointer;">
+          &#128194; Upload custom
+          <input type="file" id="icon-picker-upload" accept="image/*" style="display:none;" />
+        </label>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,911 @@
+/* ============================================================
+   GLOBAL RESET & BASE
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:          #100908;      /* near-black dark */
+  --bg-card:     #1a1008;
+  --bg-pill:     #6b2e22;
+  --text-pri:    #f3e3df;      /* updated to the soft pinkish-white of Android Material You */
+  --text-sec:    #9a8880;
+  --accent:      #f5d0c5;
+  --bar-active:  #ede0d8;
+  --bar-today:   #e09080;
+  --divider:     #2a1810;
+  --row-divider: rgba(255,255,255,0.10);
+  --pill-bg:     #5c2418;
+  --editor-bg:   #111;
+  --editor-border:#333;
+  --btn-bg:      #4a3028;
+  --btn-hover:   #6b4030;
+  --font:        'Google Sans', 'Product Sans', 'Outfit', system-ui, sans-serif;
+}
+
+html, body {
+  min-height: 100vh;
+  background: #080605;
+  font-family: var(--font);
+  color: var(--text-pri);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px 12px 120px;
+  gap: 40px;
+}
+
+/* ============================================================
+   PHONE FRAME
+   ============================================================ */
+  #phone-frame {
+  width: 100%;
+  max-width: 400px;
+  flex-shrink: 0;
+  border-radius: 36px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 2px #1a0e08,
+    0 0 0 6px #080605,
+    0 8px 48px rgba(0,0,0,0.9);
+  position: relative;
+}
+
+/* ============================================================
+   MOCK UI (screenshot capture target)
+   ============================================================ */
+#mock-ui {
+  background: var(--bg);
+  height: 889px; /* Typical modern 20:9 smartphone aspect ratio at 400px width */
+  overflow: hidden;
+  position: relative;
+}
+
+/* ============================================================
+   STATUS BAR
+   ============================================================ */
+#status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--text-pri);
+  line-height: 1.2;
+}
+
+#sb-time {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+#sb-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#sb-notif-icons {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.sb-notif-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  border-radius: 2px;
+  display: none; /* shown only when src set */
+}
+
+.sb-notif-icon.visible {
+  display: block;
+}
+
+#sb-speed {
+  font-size: 7.5px;
+  text-align: center;
+  line-height: 1.15;
+  color: var(--text-sec);
+  white-space: pre-line;
+  letter-spacing: -0.2px;
+}
+
+#sb-network {
+  font-size: 7.5px;
+  text-align: center;
+  line-height: 1.15;
+  white-space: pre-line;
+  letter-spacing: -0.2px;
+}
+
+/* Signal bars */
+#sb-signal-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5px;
+  height: 12px;
+}
+
+.bar {
+  display: block;
+  width: 3px;
+  background: var(--text-sec);
+  border-radius: 1px;
+  opacity: 0.4;
+}
+.b1 { height: 5px;  }
+.b2 { height: 7px;  }
+.b3 { height: 9px;  }
+.b4 { height: 12px; }
+
+.bar.active {
+  background: var(--text-pri);
+  opacity: 1;
+}
+
+/* WiFi icon */
+#sb-wifi-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-pri);
+}
+#sb-wifi-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Battery */
+#sb-battery-wrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+#sb-battery-icon {
+  width: 22px;
+  height: 12px;
+  border: 1.5px solid var(--text-pri);
+  border-radius: 4px;
+  position: relative;
+  padding: 1px; /* To give breathing room for inner fill */
+  box-sizing: border-box;
+}
+
+#sb-battery-icon::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.5px;
+  height: 4px;
+  background: var(--text-pri);
+  border-radius: 0 1.5px 1.5px 0;
+}
+
+#sb-battery-fill {
+  height: 100%;
+  background: var(--text-pri);
+  width: 40%;
+  transition: width 0.3s;
+  border-radius: 1px; /* slight rounding on fill */
+}
+
+#sb-battery-pct {
+  font-size: 10px;
+}
+
+/* ============================================================
+   NAV ROW
+   ============================================================ */
+#nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px 4px;
+  color: var(--text-pri);
+}
+
+#nav-back {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  display: inline-block;
+  cursor: default;
+}
+#nav-back::before,
+#nav-back::after {
+  content: '';
+  position: absolute;
+  background: var(--text-pri);
+  border-radius: 1px;
+}
+/* The long horizontal stroke */
+#nav-back::before {
+  width: 17px;
+  height: 2px;
+  top: 8px;
+  left: 2px;
+}
+/* The arrow chevron head drawn via borders */
+#nav-back::after {
+  width: 9px;
+  height: 9px;
+  border-top: 2px solid var(--text-pri);
+  border-left: 2px solid var(--text-pri);
+  transform: rotate(-45deg);
+  top: 4.5px;
+  left: 2px;
+  background: transparent;
+  border-radius: 0;
+}
+
+#nav-menu { cursor: default; font-size: 22px; letter-spacing: 1px; }
+
+/* ============================================================
+   TITLE SECTION
+   ============================================================ */
+#title-section {
+  padding: 20px 24px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+#main-title {
+  text-align: center;
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: #f1dfdc; /* perfectly match the attached image text color */
+  letter-spacing: -0.2px; /* slight tracking adjust for Google Sans feel */
+  width: 100%;
+}
+
+#dropdown-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--pill-bg);
+  border-radius: 50px;
+  padding: 10px 22px;
+  font-size: 15px;
+  cursor: pointer;
+  color: var(--text-pri);
+  transition: background 0.2s;
+}
+
+#dropdown-pill:hover {
+  background: var(--bg-pill);
+}
+
+#dropdown-arrow {
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+/* ============================================================
+   TOTAL TIME
+   ============================================================ */
+#total-time-section {
+  padding: 14px 24px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+}
+
+#total-time-display {
+  font-size: 34px;
+  font-weight: 300;
+  color: var(--text-pri);
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+#total-time-label {
+  font-size: 14px;
+  color: var(--text-sec);
+  margin-top: 2px;
+}
+
+/* ============================================================
+   CHART
+   ============================================================ */
+#chart-section {
+  padding: 0;
+  margin: 0 0 0 0;
+  position: relative;
+}
+
+#weekly-chart {
+  width: 100% !important;
+  height: 210px !important;
+  display: block;
+}
+
+/* ============================================================
+   DAY NAV
+   ============================================================ */
+#day-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 14px 24px 18px;
+  font-size: 14px;
+  color: var(--text-sec);
+}
+
+#day-nav-prev, #day-nav-next {
+  width: 9px;
+  height: 9px;
+  border-top: 1.8px solid var(--text-sec);
+  border-left: 1.8px solid var(--text-sec);
+  cursor: pointer;
+  opacity: 0.8;
+  display: inline-block;
+}
+
+#day-nav-prev {
+  transform: rotate(-45deg);
+  margin-right: 4px;
+}
+
+#day-nav-next {
+  transform: rotate(135deg);
+  margin-left: 4px;
+}
+
+#day-label {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-pri);
+  min-width: 120px;
+  text-align: center;
+  opacity: 0.85;
+}
+
+/* ============================================================
+   APP LIST
+   ============================================================ */
+#app-list {
+  padding: 0 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--divider);
+  position: relative;
+}
+
+.app-row:last-child {
+  border-bottom: none;
+}
+
+.app-icon-wrap {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.app-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  object-fit: cover;
+  background: #2a1a10;
+  display: block;
+}
+
+.app-icon-placeholder {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #3a2218 0%, #1e1008 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.app-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.app-name {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-pri);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-time {
+  font-size: 13px;
+  color: var(--text-sec);
+  line-height: 1.2;
+}
+
+/* Vertical separator before hourglass – like the screenshot */
+.app-row-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--row-divider);
+  flex-shrink: 0;
+  margin: 4px 6px;
+}
+
+.app-hourglass {
+  display: flex;
+  align-items: center;
+  color: var(--text-sec);
+  flex-shrink: 0;
+  opacity: 0.7;
+  line-height: 1;
+}
+
+/* Delete button – visible on hover */
+.app-delete-btn {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #6b1a1a;
+  border: none;
+  color: #ffd0d0;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 2;
+}
+
+.app-row:hover .app-delete-btn {
+  display: flex;
+}
+
+.app-delete-btn:hover {
+  background: #9b2a2a;
+}
+
+/* Icon upload overlay */
+.icon-upload-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  border-radius: 14px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.app-icon-wrap:hover .icon-upload-overlay {
+  display: flex;
+}
+
+/* ============================================================
+   EDITOR PANEL
+   ============================================================ */
+#editor-panel {
+  width: 100%;
+  width: 480px; /* fixed width on desktop since it's side-by-side now */
+  flex-shrink: 0;
+  background: var(--editor-bg);
+  border: 1px solid var(--editor-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.6);
+}
+
+#editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: #1a1a1a;
+  cursor: pointer;
+  user-select: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ddd;
+  border-bottom: 1px solid var(--editor-border);
+}
+
+#editor-header:hover {
+  background: #222;
+}
+
+#editor-toggle-icon {
+  font-size: 12px;
+}
+
+#editor-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  padding: 0;
+}
+
+#editor-body.open {
+  max-height: 9999px;
+  padding: 0 0 16px;
+}
+
+.editor-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--editor-border);
+}
+
+.editor-section:last-child {
+  border-bottom: none;
+}
+
+.editor-section h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+.editor-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.editor-row label {
+  font-size: 13px;
+  color: #bbb;
+  min-width: 110px;
+  flex-shrink: 0;
+}
+
+.editor-row input,
+.editor-row select {
+  flex: 1;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: #eee;
+  padding: 6px 10px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.editor-row input:focus,
+.editor-row select:focus {
+  border-color: #7a4030;
+}
+
+.editor-row input[type="file"] {
+  padding: 4px 6px;
+  font-size: 11px;
+}
+
+.editor-row input[type="number"] {
+  -moz-appearance: textfield;
+}
+.editor-row input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: auto;
+}
+
+/* Today's day input is auto-driven — visually distinct */
+.weekly-day-field input.auto-today {
+  border-color: #7a4030 !important;
+  color: #e8b090 !important;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+/* Weekly editor grid */
+#weekly-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.weekly-day-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.weekly-day-field label {
+  font-size: 10px;
+  color: #888;
+  min-width: unset;
+}
+
+.weekly-day-field input {
+  width: 100%;
+  text-align: center;
+  padding: 5px 2px;
+  font-size: 12px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #eee;
+  outline: none;
+}
+
+.weekly-day-field input:focus {
+  border-color: #7a4030;
+}
+
+/* Buttons */
+#btn-add-app,
+#btn-export,
+#btn-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 9px 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#btn-add-app {
+  background: #5c2d1a;
+  color: #f0d0c0;
+}
+#btn-add-app:hover { background: #7a3a22; }
+#btn-add-app:active { transform: scale(0.97); }
+
+#btn-export {
+  background: #1a4a2a;
+  color: #c0f0d0;
+}
+#btn-export:hover { background: #22633a; }
+#btn-export:active { transform: scale(0.97); }
+
+#btn-reset {
+  background: #4a1a1a;
+  color: #f0c0c0;
+  margin-left: 8px;
+}
+#btn-reset:hover { background: #6a2222; }
+#btn-reset:active { transform: scale(0.97); }
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 950px) {
+  html, body {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  body { padding: 0 0 100px; }
+  #phone-frame { border-radius: 0; box-shadow: none; }
+  #editor-panel { border-radius: 0; max-width: 100%; }
+  #main-title { font-size: 30px; }
+  #total-time-display { font-size: 38px; }
+}
+
+/* ============================================================
+   CAP ERROR TOAST
+   ============================================================ */
+#cap-toast {
+  background: #5a1a1a;
+  color: #ffcccc;
+  font-size: 12px;
+  padding: 9px 14px;
+  margin: 10px 16px 0;
+  border-radius: 8px;
+  border-left: 3px solid #cc4444;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.25s ease, opacity 0.25s ease, margin 0.25s ease;
+  pointer-events: none;
+}
+
+#cap-toast.visible {
+  max-height: 80px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ============================================================
+   EXPORT / SCREENSHOT STATE
+   ============================================================ */
+body.exporting #editor-panel { display: none !important; }
+body.exporting #phone-frame {
+  box-shadow: none;
+}
+
+/* ============================================================
+   ADD APP – ICON PREVIEW THUMB
+   ============================================================ */
+.icon-preview-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #222;
+  border: 1.5px dashed #444;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #555;
+}
+
+.icon-preview-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.btn-pick-lib {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: #ccc;
+  font-size: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.btn-pick-lib:hover { background: #383838; color: #fff; }
+
+/* ============================================================
+   ICON PICKER MODAL
+   ============================================================ */
+#icon-picker-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+#icon-picker-backdrop.open {
+  display: flex;
+}
+
+#icon-picker-modal {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 16px;
+  width: 320px;
+  max-width: 92vw;
+  overflow: hidden;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
+}
+
+#icon-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #242424;
+  border-bottom: 1px solid #333;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ddd;
+}
+
+#icon-picker-close {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+#icon-picker-close:hover { background: #333; color: #fff; }
+
+#icon-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.icon-picker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 8px 4px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.icon-picker-item:hover {
+  background: #2a2a2a;
+  border-color: #7a4030;
+}
+
+.icon-picker-item.selected {
+  border-color: #c06040;
+  background: #2a1a14;
+}
+
+.icon-picker-item img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.icon-picker-item span {
+  font-size: 10px;
+  color: #888;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+#icon-picker-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #2a2a2a;
+  display: flex;
+  justify-content: center;
+}
