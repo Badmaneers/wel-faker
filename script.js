@@ -655,7 +655,11 @@ function syncEditorToState() {
   document.getElementById('ed-battery').value = state.statusBar.battery;
   document.getElementById('ed-network').value = state.statusBar.network;
   document.getElementById('ed-signal').value  = state.statusBar.signal;
-  document.getElementById('ed-speed').value   = state.statusBar.speed;
+
+  // Speed – split into value + unit
+  const speedParts = (state.statusBar.speed || '34.0 KB/S').split(' ');
+  document.getElementById('ed-speed-val').value  = speedParts[0] || '34.0';
+  document.getElementById('ed-speed-unit').value = speedParts.slice(1).join(' ') || 'KB/S';
 
   // Title / day
   // title is fixed – no editor input
@@ -680,7 +684,15 @@ function bindEditorEvents() {
   bind('ed-battery', 'input',  () => { state.statusBar.battery = num('ed-battery'); renderStatusBar(); saveState(); });
   bind('ed-network', 'change', () => { state.statusBar.network = v('ed-network'); renderStatusBar(); saveState(); });
   bind('ed-signal',  'input',  () => { state.statusBar.signal  = num('ed-signal'); renderStatusBar(); saveState(); });
-  bind('ed-speed',   'input',  () => { state.statusBar.speed   = v('ed-speed');   renderStatusBar(); saveState(); });
+
+  // Speed – combine value + unit
+  const updateSpeed = () => {
+    state.statusBar.speed = v('ed-speed-val') + ' ' + v('ed-speed-unit');
+    renderStatusBar();
+    saveState();
+  };
+  bind('ed-speed-val',  'input',  updateSpeed);
+  bind('ed-speed-unit', 'change', updateSpeed);
 
   // Day label
   bind('ed-day-label', 'input', () => {
