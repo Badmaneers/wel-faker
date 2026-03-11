@@ -532,14 +532,24 @@ function editAppTime(id, el) {
   el.replaceWith(wrap);
   hInput.focus();
 
+  let committed = false;
   const commit = () => {
+    if (committed) return;
+    // Don't commit if focus is still within the wrap
+    if (wrap.contains(document.activeElement)) return;
+
+    committed = true;
     const nh = Math.max(0, parseInt(hInput.value, 10) || 0);
     const nm = Math.max(0, Math.min(59, parseInt(mInput.value, 10) || 0));
     const proposed = nh * 60 + nm;
 
     // ── Cap validation ──
     const err = validateMinutes(proposed, app.id);
-    if (err) { showCapError(err); return; }
+    if (err) {
+      committed = false;
+      showCapError(err);
+      return;
+    }
 
     app.minutes = proposed;
     saveState();
@@ -549,8 +559,10 @@ function editAppTime(id, el) {
   };
 
   [hInput, mInput].forEach(inp => {
-    inp.addEventListener('blur',   () => setTimeout(commit, 120));
-    inp.addEventListener('keydown', e => { if (e.key === 'Enter') commit(); });
+    inp.addEventListener('blur',   () => setTimeout(commit, 150));
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { committed = false; commit(); }
+    });
   });
 }
 
